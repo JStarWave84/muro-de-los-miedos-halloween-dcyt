@@ -1,0 +1,50 @@
+---
+import "@fontsource/creepster";
+import "@fontsource-variable/inter";
+import "@fontsource/crimson-text/latin-400.css";
+import "@fontsource/crimson-text/latin-600.css";
+import "../styles/global.css";
+
+import BotonSonido from "../components/BotonSonido.vue";
+import FondoHalloween from "../components/FondoHalloween.astro";
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+}
+
+const {
+  titulo = "El Muro de los Miedos",
+  descripcion = "Escribe eso que te da miedo y cuélgalo en el muro del Halloween de UCLADCyT. Sin registro, sin nombres, sin juicio.",
+} = Astro.props;
+
+const tituloCompleto = `${titulo} · Halloween UCLADCyT`;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  </head>
+
+  <body class="min-h-dvh overflow-x-hidden bg-carbon text-hueso">
+    <a class="salto-contenido" href="#cuelga">Ir al formulario</a>
+
+    <FondoHalloween />
+
+    <div class="relative z-10">
+      <slot />
+    </div>
+
+    <BotonSonido client:idle />
+  </body>
+</html>

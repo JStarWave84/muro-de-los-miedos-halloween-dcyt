@@ -1,0 +1,153 @@
+---
+/**
+ * Fondo decorativo (100% estático, sin JS): cielo, niebla, murciélagos,
+ * telaraña, calabazas y grano de película.
+ * Todo es aria-hidden: no aporta información, solo atmósfera.
+ */
+
+// PRNG con semilla fija para que el cielo sea el mismo en cada visita.
+function crearAzar(semilla: number) {
+  let a = semilla >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const azar = crearAzar(31);
+
+const estrellas = Array.from({ length: 56 }, () => ({
+  x: Number((azar() * 100).toFixed(2)),
+  y: Number((azar() * 82).toFixed(2)),
+  tamano: Number((1.2 + azar() * 2.2).toFixed(2)),
+  opacidad: Number((0.22 + azar() * 0.55).toFixed(2)),
+  retraso: Number((azar() * 9).toFixed(2)),
+}));
+
+const murcielagos = [
+  { top: "18%", tamano: 58, duracion: 46, retraso: -4, opacidad: 0.5 },
+  { top: "54%", tamano: 34, duracion: 58, retraso: -26, opacidad: 0.34 },
+  { top: "8%", tamano: 24, duracion: 38, retraso: -17, opacidad: 0.28 },
+];
+---
+
+<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+  <!-- Cielo: dos focos de luz, morado arriba y naranja abajo -->
+  <div class="absolute inset-0 bg-carbon"></div>
+  <div
+    class="absolute -top-[38vh] left-1/2 h-[90vh] w-[120vw] -translate-x-1/2 opacity-70"
+    style="background: radial-gradient(closest-side, rgba(107,33,168,0.34), rgba(107,33,168,0.10) 55%, transparent 78%);"
+  >
+  </div>
+  <div
+    class="absolute -bottom-[34vh] left-1/2 h-[70vh] w-[110vw] -translate-x-1/2 opacity-60"
+    style="background: radial-gradient(closest-side, rgba(255,107,26,0.20), rgba(255,107,26,0.05) 60%, transparent 80%);"
+  >
+  </div>
+
+  <!-- Estrellas -->
+  <div class="absolute inset-0">
+    {
+      estrellas.map((estrella) => (
+        <span
+          class="absolute rounded-full bg-hueso motion-safe:animate-parpadeo"
+          style={`left:${estrella.x}%; top:${estrella.y}%; width:${estrella.tamano}px; height:${estrella.tamano}px; opacity:${estrella.opacidad}; animation-delay:${estrella.retraso}s;`}
+        />
+      ))
+    }
+  </div>
+
+  <!-- Niebla baja -->
+  <div class="absolute inset-x-0 bottom-0 h-[45vh] overflow-hidden">
+    <div
+      class="absolute -left-[10%] bottom-[-12%] h-[60%] w-[70%] rounded-[50%] bg-embrujado/20 blur-3xl motion-safe:animate-latir"
+      style="animation-duration: 14s;"
+    >
+    </div>
+    <div
+      class="absolute right-[-15%] bottom-[-18%] h-[55%] w-[65%] rounded-[50%] bg-calabaza/10 blur-3xl motion-safe:animate-latir"
+      style="animation-duration: 18s; animation-delay: 3s;"
+    >
+    </div>
+  </div>
+
+  <!-- Telaraña con araña, esquina superior derecha -->
+  <div class="absolute -top-2 right-0 hidden sm:block">
+    <svg width="220" height="200" viewBox="0 0 220 200" fill="none" class="text-hueso/20">
+      <g stroke="currentColor" stroke-width="1">
+        <path d="M220 0 L60 130 M220 0 L10 92 M220 0 L128 190 M220 0 L2 22 M220 0 L186 186"></path>
+        <path d="M148 22 q-38 22 -30 62 M120 55 q-52 30 -40 78 M86 92 q-56 32 -44 82" opacity="0.7"></path>
+      </g>
+    </svg>
+    <div class="absolute top-14 right-24 origin-top motion-safe:animate-vaiven">
+      <div class="mx-auto h-16 w-px bg-hueso/20"></div>
+      <svg width="26" height="22" viewBox="0 0 26 22" fill="currentColor" class="text-embrujado-claro/60">
+        <ellipse cx="13" cy="14" rx="5" ry="6"></ellipse>
+        <circle cx="13" cy="7" r="3.2"></circle>
+        <g stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M8 11 L1 7 M8 14 L0 14 M8 17 L1 20"></path>
+          <path d="M18 11 L25 7 M18 14 L26 14 M18 17 L25 20"></path>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Murciélagos cruzando -->
+  {
+    murcielagos.map((b) => (
+      <svg
+        viewBox="0 0 100 42"
+        width={b.tamano}
+        height={b.tamano * 0.42}
+        fill="currentColor"
+        class="absolute left-0 motion-safe:animate-cruzar"
+        style={`top:${b.top}; color:#f5f0e1; opacity:${b.opacidad}; animation-duration:${b.duracion}s; animation-delay:${b.retraso}s;`}
+      >
+        <path d="M50 22c-2-6-6-10-12-11 1 4 0 7-2 9 5 1 9 4 11 8 1-2 2-3 3-3s2 1 3 3c2-4 6-7 11-8-2-2-3-5-2-9-6 1-10 5-12 11Z"></path>
+        <path d="M45 8 47 3 49 8Z M55 8 53 3 51 8Z"></path>
+      </svg>
+    ))
+  }
+
+  <!-- Calabazas silueta al pie del muro -->
+  <div class="absolute inset-x-0 bottom-0">
+    <div class="mx-auto flex max-w-6xl items-end justify-between px-2">
+      <svg
+        width="132"
+        height="104"
+        viewBox="0 0 132 104"
+        fill="none"
+        class="text-calabaza/25 motion-safe:animate-flotar"
+      >
+        <ellipse cx="66" cy="70" rx="52" ry="34" fill="currentColor"></ellipse>
+        <path d="M66 34c-6-10-14-12-18-10 5 2 8 6 9 12" stroke="currentColor" stroke-width="4"></path>
+        <path d="M44 66 l16 8 -16 8Z M88 66 l-16 8 16 8Z" fill="#0a0a0a"></path>
+        <path d="M50 88 q16 8 32 0" stroke="#0a0a0a" stroke-width="3" fill="none"></path>
+      </svg>
+      <svg
+        width="86"
+        height="70"
+        viewBox="0 0 132 104"
+        fill="none"
+        class="text-embrujado-claro/20 motion-safe:animate-flotar"
+        style="animation-duration: 11s; animation-delay: 1.8s;"
+      >
+        <ellipse cx="66" cy="70" rx="52" ry="34" fill="currentColor"></ellipse>
+        <path d="M44 66 l16 8 -16 8Z M88 66 l-16 8 16 8Z" fill="#0a0a0a"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Grano: unifica todo y le quita el aire de "gradiente digital" -->
+  <div class="grano absolute inset-0 opacity-[0.05]"></div>
+
+  <!-- Viñeta -->
+  <div
+    class="absolute inset-0"
+    style="background: radial-gradient(120% 90% at 50% 40%, transparent 40%, rgba(10,10,10,0.85) 100%);"
+  >
+  </div>
+</div>

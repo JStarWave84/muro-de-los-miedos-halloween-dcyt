@@ -1,0 +1,399 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Sistema de diseño · El Muro de los Miedos
+   Un muro de papelitos en una habitación a oscuras, iluminada por una vela.
+   ========================================================================== */
+
+@theme {
+  /* --- Paleta ------------------------------------------------------------ */
+  --color-carbon: #0a0a0a;
+  --color-carbon-2: #100d0c;
+  --color-calabaza: #ff6b1a;
+  --color-calabaza-claro: #ffb066;
+  --color-embrujado: #6b21a8;
+  --color-embrujado-claro: #a855f7;
+  --color-toxico: #84cc16;
+  --color-hueso: #f5f0e1;
+  --color-humo: #9c9384;
+  --color-tinta: #17120f;
+  --color-tinta-suave: #5b5347;
+
+  /* --- Tipografía -------------------------------------------------------- */
+  /* Cartel del evento */
+  --font-display: "Creepster", "Impact", sans-serif;
+  /* Interfaz y textos de apoyo */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Lo que está escrito a mano en el papelito */
+  --font-nota: "Crimson Text", Georgia, "Times New Roman", serif;
+  /* Etiquetas, folios, contadores */
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, monospace;
+
+  /* --- Movimiento -------------------------------------------------------- */
+  --animate-flotar: flotar 9s ease-in-out infinite;
+  --animate-llama: llama 1.5s ease-in-out infinite;
+  --animate-cruzar: cruzar 44s linear infinite;
+  --animate-entrar: entrar 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  --animate-vaiven: vaiven 7s ease-in-out infinite;
+  --animate-parpadeo: parpadeo 4.5s ease-in-out infinite;
+  --animate-girar: girar 1s linear infinite;
+  --animate-latir: latir 2.6s ease-in-out infinite;
+
+  @keyframes flotar {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -14px, 0);
+    }
+  }
+
+  @keyframes llama {
+    0%,
+    100% {
+      transform: translateY(0) scale(1) rotate(-1deg);
+      opacity: 0.95;
+    }
+    25% {
+      transform: translateY(-2px) scale(1.06, 0.94) rotate(2deg);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(1px) scale(0.94, 1.08) rotate(-2deg);
+      opacity: 0.9;
+    }
+    75% {
+      transform: translateY(-1px) scale(1.03, 0.97) rotate(1deg);
+      opacity: 1;
+    }
+  }
+
+  /* El murciélago cruza en ~45% del ciclo y desaparece el resto: "de vez en cuando". */
+  @keyframes cruzar {
+    0% {
+      transform: translate3d(-14vw, 6vh, 0) rotate(-5deg);
+      opacity: 0;
+    }
+    3% {
+      opacity: 0.75;
+    }
+    22% {
+      transform: translate3d(26vw, -3vh, 0) rotate(3deg);
+      opacity: 0.8;
+    }
+    38% {
+      transform: translate3d(66vw, 4vh, 0) rotate(-3deg);
+      opacity: 0.7;
+    }
+    46% {
+      transform: translate3d(112vw, -2vh, 0) rotate(4deg);
+      opacity: 0;
+    }
+    100% {
+      transform: translate3d(112vw, -2vh, 0) rotate(4deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes entrar {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes vaiven {
+    0%,
+    100% {
+      transform: rotate(-4deg);
+    }
+    50% {
+      transform: rotate(4deg);
+    }
+  }
+
+  @keyframes parpadeo {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes girar {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes latir {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.12);
+    }
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-carbon);
+    color: var(--color-hueso);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-calabaza);
+    color: var(--color-carbon);
+  }
+
+  /* Foco visible en todo el sitio, también sobre el papel claro. */
+  :focus-visible {
+    outline: 2px solid var(--color-calabaza);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .papel :focus-visible,
+  .nota :focus-visible {
+    outline-color: var(--color-embrujado);
+  }
+
+  /* Scrollbar de vela. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-calabaza) var(--color-carbon);
+  }
+
+  /* Cursor de vela, solo en punteros finos. Se puede quitar borrando este bloque. */
+  @media (pointer: fine) {
+    body {
+      cursor:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M14 2.5c2.5 2.7 3.5 4.7 3.5 6.3a3.5 3.5 0 0 1-7 0c0-1.6 1-3.6 3.5-6.3z' fill='%23ff6b1a'/%3E%3Cpath d='M14 6.2c1.3 1.5 1.8 2.5 1.8 3.3a1.8 1.8 0 0 1-3.6 0c0-.8.5-1.8 1.8-3.3z' fill='%23ffd166'/%3E%3Crect x='11' y='12.2' width='6' height='12.6' rx='1.2' fill='%23f5f0e1'/%3E%3Crect x='11' y='12.2' width='6' height='2.2' rx='1.1' fill='%23d9d2bf'/%3E%3C/svg%3E")
+          14 2,
+        auto;
+    }
+
+    a,
+    button,
+    label,
+    textarea,
+    input,
+    summary,
+    [role="button"] {
+      cursor: pointer;
+    }
+
+    textarea,
+    input {
+      cursor: text;
+    }
+  }
+}
+
+/* ==========================================================================
+   Componentes
+   ========================================================================== */
+
+@layer components {
+  /* --- Papel -----------------------------------------------------------------
+     Hoja hueso con algo de fibra y una sombra corta. Nada de border-radius
+     grande: el papel no es una tarjeta de SaaS. */
+  .papel {
+    position: relative;
+    color: var(--color-tinta);
+    background-color: var(--color-hueso);
+    background-image:
+      radial-gradient(120% 90% at 50% -20%, rgba(255, 255, 255, 0.7), transparent 60%),
+      repeating-linear-gradient(180deg, rgba(23, 18, 15, 0.032) 0 1px, transparent 1px 4px);
+    border-radius: 3px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.65) inset,
+      0 0 0 1px rgba(23, 18, 15, 0.1),
+      0 22px 34px -26px rgba(0, 0, 0, 0.95),
+      0 4px 12px -8px rgba(0, 0, 0, 0.8);
+  }
+
+  /* --- Nota pegada al muro ----------------------------------------------------
+     La rotación viene de --rot (inline). El hover la endereza y la despega. */
+  .nota {
+    transform: rotate(var(--rot, 0deg));
+    transition:
+      transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1),
+      box-shadow 0.4s ease;
+    will-change: transform;
+  }
+
+  .nota:hover {
+    transform: rotate(calc(var(--rot, 0deg) * 0.3)) translateY(-6px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 0 0 1px rgba(23, 18, 15, 0.12),
+      0 32px 44px -28px rgba(0, 0, 0, 1),
+      0 10px 20px -12px rgba(0, 0, 0, 0.85);
+  }
+
+  /* --- Cinta adhesiva -------------------------------------------------------- */
+  .cinta {
+    position: absolute;
+    top: -0.75rem;
+    left: 50%;
+    width: 5.5rem;
+    height: 1.45rem;
+    translate: -50% 0;
+    rotate: -2.5deg;
+    background:
+      linear-gradient(180deg, rgba(255, 252, 240, 0.78), rgba(213, 205, 185, 0.55));
+    border-left: 1px solid rgba(255, 255, 255, 0.55);
+    border-right: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 7px -2px rgba(0, 0, 0, 0.45);
+    opacity: 0.92;
+    pointer-events: none;
+  }
+
+  /* --- Grano de película ----------------------------------------------------- */
+  .grano {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 220px 220px;
+    mix-blend-mode: screen;
+  }
+
+  /* --- Botón vela ------------------------------------------------------------ */
+  .boton-vela {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    padding: 0.95rem 1.35rem;
+    border-radius: 3px;
+    border: 1px solid rgba(245, 240, 225, 0.16);
+    background:
+      linear-gradient(180deg, #2a1c14, #140f0c 70%);
+    color: var(--color-hueso);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition:
+      border-color 0.3s ease,
+      box-shadow 0.4s ease,
+      color 0.3s ease,
+      transform 0.2s ease;
+  }
+
+  .boton-vela:hover:not(:disabled) {
+    border-color: rgba(255, 107, 26, 0.55);
+    color: #fff;
+    box-shadow:
+      0 0 0 1px rgba(255, 107, 26, 0.18),
+      0 0 40px -8px rgba(255, 107, 26, 0.55),
+      inset 0 0 26px -14px rgba(255, 176, 102, 0.8);
+  }
+
+  .boton-vela:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .boton-vela:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* La llama del botón: se enciende con hover y tiembla siempre. */
+  .llama {
+    position: relative;
+    display: block;
+    width: 0.6rem;
+    height: 0.95rem;
+    border-radius: 50% 50% 45% 45% / 68% 68% 32% 32%;
+    background: radial-gradient(circle at 50% 72%, #ffe3a3 0%, #ffb066 42%, #ff6b1a 72%, #c2410c 100%);
+    box-shadow:
+      0 0 10px 1px rgba(255, 107, 26, 0.55),
+      0 0 26px 6px rgba(255, 107, 26, 0.25);
+    transform-origin: 50% 100%;
+    animation: var(--animate-llama);
+  }
+
+  .boton-vela:hover .llama {
+    animation-duration: 0.9s;
+    box-shadow:
+      0 0 14px 2px rgba(255, 140, 60, 0.75),
+      0 0 36px 10px rgba(255, 107, 26, 0.35);
+  }
+
+  /* --- Enlace de salto (accesibilidad) --------------------------------------- */
+  .salto-contenido {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    translate: 0 -200%;
+    padding: 0.6rem 1rem;
+    border-radius: 2px;
+    background: var(--color-hueso);
+    color: var(--color-tinta);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    transition: translate 0.2s ease;
+  }
+
+  .salto-contenido:focus-visible {
+    translate: 0 0;
+  }
+
+  /* --- Etiqueta de sección (monoespaciada) ------------------------------------ */
+  .etiqueta {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-humo);
+  }
+
+  /* --- Regla fina ------------------------------------------------------------ */
+  .regla {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(245, 240, 225, 0.22),
+      transparent
+    );
+  }
+}
+
+/* Respeta a quien pide calma: fuera animaciones decorativas. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .nota,
+  .nota:hover {
+    transform: rotate(var(--rot, 0deg));
+  }
+}

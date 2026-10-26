@@ -1,0 +1,18 @@
+# Netlify · El Muro de los Miedos
+# El adapter @astrojs/netlify genera la función SSR a partir de `astro build`.
+
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  # El proyecto pide Node >= 22 (ver package.json → engines)
+  NODE_VERSION = "22"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

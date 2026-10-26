@@ -1,0 +1,32 @@
+---
+const anio = new Date().getFullYear();
+---
+
+<footer class="relative mt-24 border-t border-hueso/10 px-5 py-12 sm:px-8">
+  <div
+    class="mx-auto flex max-w-6xl flex-col gap-8 sm:flex-row sm:items-end sm:justify-between"
+  >
+    <div>
+      <p class="font-display text-2xl text-hueso/85">El Muro de los Miedos</p>
+      <p class="etiqueta mt-2 leading-relaxed">
+        Halloween UCLADCyT · sin registro · sin datos personales
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3 sm:items-end">
+      <a
+        href="#cuelga"
+        class="etiqueta text-hueso/70 underline decoration-hueso/20 underline-offset-4 transition hover:text-calabaza hover:decoration-calabaza"
+      >
+        Cuelga el tuyo ↑
+      </a>
+      <p class="etiqueta text-hueso/35">
+        Astro + Vue + Supabase · {anio}
+      </p>
+      <p class="max-w-xs text-xs leading-relaxed text-hueso/35 sm:text-right">
+        Si algo se rompe o ves algo fuera de lugar, avisa a la organización del
+        evento.
+      </p>
+    </div>
+  </div>
+</footer>

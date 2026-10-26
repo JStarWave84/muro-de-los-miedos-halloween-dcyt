@@ -1,0 +1,81 @@
+---
+// Página servida desde el servidor en cada visita: el muro siempre está fresco
+// y se puede leer sin JavaScript (la isla del formulario es la única obligatoria).
+export const prerender = false;
+
+import Footer from "../components/Footer.astro";
+import FormMiedo from "../components/FormMiedo.vue";
+import Hero from "../components/Hero.astro";
+import MuroMiedos from "../components/MuroMiedos.vue";
+import Layout from "../layouts/Layout.astro";
+import { listarMiedos, type Miedo } from "../lib/miedos";
+import { supabaseConfigurado } from "../lib/supabase";
+
+let miedos: Miedo[] = [];
+let total = 0;
+let errorInicial = false;
+
+if (supabaseConfigurado) {
+  try {
+    const resultado = await listarMiedos();
+    miedos = resultado.miedos;
+    total = resultado.total;
+  } catch (fallo) {
+    console.error("[muro] no se pudo leer el muro desde Supabase:", fallo);
+    errorInicial = true;
+  }
+} else {
+  console.warn(
+    "[muro] faltan PUBLIC_SUPABASE_URL y/o PUBLIC_SUPABASE_ANON_KEY: revisa tu .env",
+  );
+  errorInicial = true;
+}
+
+const ultimoEn = miedos[0]?.creado_en ?? null;
+---
+
+<Layout>
+  <Hero total={total} ultimoEn={ultimoEn} errorInicial={errorInicial} />
+
+  <main>
+    <section id="cuelga" class="relative mx-auto max-w-6xl scroll-mt-8 px-5 pt-10 sm:px-8 sm:pt-14">
+      <div class="grid gap-10 md:grid-cols-[minmax(0,1fr)_15rem] md:gap-12">
+        <div class="max-w-2xl">
+          <FormMiedo client:load />
+        </div>
+
+        <aside class="hidden border-l border-hueso/10 pl-6 md:block">
+          <p class="etiqueta">Cómo va esto</p>
+          <ol class="mt-4 space-y-5 text-sm leading-relaxed text-hueso/55">
+            <li class="flex gap-3">
+              <span class="font-mono text-[0.65rem] text-calabaza/80">01</span>
+              <span>Escribe tu miedo. 280 caracteres como máximo.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="font-mono text-[0.65rem] text-calabaza/80">02</span>
+              <span>Fírmalo si te atreves. Si no, queda como anónimo.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="font-mono text-[0.65rem] text-calabaza/80">03</span>
+              <span>Se cuelga al instante y ya no se puede editar.</span>
+            </li>
+          </ol>
+
+          <p class="mt-7 border-t border-hueso/10 pt-4 text-xs leading-relaxed text-hueso/35">
+            Nada de nombres de otras personas, insultos ni datos personales. El
+            muro es para miedos, no para herir.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <MuroMiedos
+      client:idle
+      iniciales={miedos}
+      totalInicial={total}
+      errorInicial={errorInicial}
+    />
+  </main>
+
+  <Footer />
+</Layout>
