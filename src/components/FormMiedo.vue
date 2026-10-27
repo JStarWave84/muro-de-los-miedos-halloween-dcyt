@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from "vue";
 import { crearMiedo } from "../lib/miedos";
+import { contieneGroseria } from "../lib/profanidad";
 import {
   ALIAS_MAX,
   ALIAS_POR_DEFECTO,
   CONTENIDO_MAX,
+  empiezaConMiedo,
   miedoSchema,
+  PREFIJO_MIEDO,
 } from "../lib/schemas";
 import { reproducirClickTenebroso } from "../lib/sonido";
 import { colgarEnElMuro } from "../store/miedos";
@@ -24,6 +27,10 @@ let temporizadorExito: ReturnType<typeof setTimeout> | undefined;
 const caracteres = computed(() => contenido.value.length);
 const restantes = computed(() => CONTENIDO_MAX - caracteres.value);
 const excedido = computed(() => caracteres.value > CONTENIDO_MAX);
+const hayGroseria = computed(() => contieneGroseria(contenido.value));
+const faltaPrefijo = computed(
+  () => contenido.value.trim().length > 0 && !empiezaConMiedo(contenido.value),
+);
 
 const colorContador = computed(() => {
   if (excedido.value) return "text-red-700";
@@ -130,6 +137,14 @@ onBeforeUnmount(() => clearTimeout(temporizadorExito));
         ></textarea>
       </div>
 
+      <p
+        v-if="faltaPrefijo && !errorCampo"
+        class="mt-1 border-l-2 border-[#b45309] pl-3 font-mono text-[0.65rem] leading-relaxed text-[#7c2d12]"
+        aria-live="polite"
+      >
+        Empieza con «{{ PREFIJO_MIEDO }}…»
+      </p>
+
       <div class="mt-2 flex items-center justify-between gap-3">
         <p class="font-mono text-[0.65rem] text-tinta-suave/45">
           <span class="hidden sm:inline">Ctrl + Enter para colgar</span>
@@ -143,6 +158,14 @@ onBeforeUnmount(() => clearTimeout(temporizadorExito));
           {{ caracteres }} / {{ CONTENIDO_MAX }}
         </p>
       </div>
+
+      <p
+        v-if="hayGroseria && !errorCampo"
+        class="mt-1 border-l-2 border-[#b45309] pl-3 font-mono text-[0.65rem] leading-relaxed text-[#7c2d12]"
+        aria-live="polite"
+      >
+        Hay una palabra que no cabe en este muro 🕯️
+      </p>
 
       <div class="mt-5">
         <label for="alias" class="etiqueta text-tinta-suave/70">

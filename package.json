@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "probar:filtro": "node scripts/probar-filtro.mjs"
   },
   "dependencies": {
     "@astrojs/netlify": "^8.2.10",

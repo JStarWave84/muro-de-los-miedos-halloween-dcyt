@@ -131,6 +131,8 @@ pnpm preview    # previsualiza el build
 ├── public/
 │   ├── favicon.svg
 │   └── favicon.ico
+├── scripts/
+│   └── probar-filtro.mjs       # pruebas del filtro (sin dependencias)
 └── src/
     ├── env.d.ts                # tipado de import.meta.env
     ├── styles/
@@ -139,6 +141,8 @@ pnpm preview    # previsualiza el build
     │   ├── supabase.ts         # cliente único (sirve en servidor y en islas)
     │   ├── miedos.ts           # listar / nuevos desde id / insertar
     │   ├── schemas.ts          # esquema Zod + saneado del texto
+    │   ├── profanidad.ts       # motor del filtro (normaliza y compara)
+    │   ├── palabras-bloqueadas.ts # lista negra + muletillas permitidas
     │   ├── fecha.ts            # "hace 5 min", folios, fechas cortas
     │   ├── rotacion.ts         # inclinación estable por papelito (-3°..+3°)
     │   └── sonido.ts           # click tenebroso sintetizado (Web Audio)
@@ -178,7 +182,8 @@ usuario nunca interactúa, igual ve el muro completo.
 
 ## Cómo funciona el flujo "publicar y que aparezca arriba"
 
-1. `FormMiedo` valida con Zod y hace `insert` en Supabase con la anon key.
+1. `FormMiedo` valida con Zod (prefijo «Tengo miedo de…», longitudes, groserías)
+   y hace `insert` en Supabase con la anon key.
 2. Supabase devuelve la fila creada (`.select().single()`).
 3. El formulario la publica en el Nano Store `miedosColgados`.
 4. `MuroMiedos` está suscrito al store y la fusiona arriba del grid, sin recargar.
@@ -271,6 +276,7 @@ lee el muro fresco de Supabase.
 | `pnpm build`    | Build SSR para Netlify                  |
 | `pnpm preview`  | Sirve el build localmente               |
 | `pnpm astro …`  | CLI de Astro (`astro check`, `astro add`) |
+| `pnpm probar:filtro` | Prueba el filtro de groserías y las reglas de envío del formulario |
 
 ---
 
@@ -292,6 +298,17 @@ delete from public.miedos where id = 42;
 **Moderación**: no hay panel. Si alguien escribe algo ofensivo, bórralo desde el
 SQL Editor del dashboard. Si el evento es grande, considera añadir un rate limit
 por IP en una Edge Function o un edge middleware de Netlify.
+
+**Filtro de groserías**: el formulario rechaza groserías explícitas, insultos
+fuertes y slurs antes de insertar (ver `src/lib/profanidad.ts` y
+`src/lib/palabras-bloqueadas.ts`). Cubre español general, México, Venezuela y
+Caribe, Argentina, Chile y Colombia. Las palabras de doble filo que sí son
+miedos legítimos (`bicho`, `sapo`, `gonorrea`, `arrecho`, `carajito`) están en
+`PALABRAS_AMBIGUAS_PERMITIDAS`, y las muletillas (`güey`, `pinche`, `nojoda`)
+en `MULETILLAS_PERMITIDAS`. Para añadir o quitar palabras, edita el array y
+ejecuta `pnpm probar:filtro`. Ojo: al vivir en el cliente, protege a quien usa
+la web pero **no** a quien llame a la API de Supabase directamente; para eso
+habría que replicar la misma lista en un trigger de Postgres.
 
 ---
 
