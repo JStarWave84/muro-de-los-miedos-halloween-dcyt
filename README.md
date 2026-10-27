@@ -149,7 +149,7 @@ pnpm preview    # previsualiza el build
     ├── store/
     │   └── miedos.ts           # Nano Store: miedos colgados en esta visita
     ├── layouts/
-    │   └── Layout.astro        # <head>, fuentes, fondo, skip link
+    │   └── Layout.astro        # <head>, fuentes, fondo, skip link, diálogo de reglas
     ├── pages/
     │   └── index.astro         # SSR: trae el muro y lo pasa a las islas
     └── components/
@@ -158,6 +158,7 @@ pnpm preview    # previsualiza el build
         ├── Footer.astro        # estático
         ├── TarjetaMiedo.vue    # isla hija: papelito con cinta
         ├── FormMiedo.vue       # ISLA (client:load): formulario + validación + submit
+        ├── TerminosMuro.vue    # ISLA (client:load): reglas y monitoreo antes de escribir
         ├── MuroMiedos.vue      # ISLA (client:idle): grid, recargar, cargar más, auto-refresh
         └── BotonSonido.vue     # ISLA (client:idle): mute persistente
 ```
@@ -171,6 +172,7 @@ pnpm preview    # previsualiza el build
 | `Footer.astro`             | Astro | Estático.                                                     |
 | `FormMiedo.vue`            | Vue   | Estado real: textarea, contador, validación, spinner, éxito.  |
 | `TarjetaMiedo.vue`         | Vue   | Se renderiza dentro de la isla del muro (necesita reactividad).|
+| `TerminosMuro.vue`         | Vue   | `<dialog>` nativo modal: reglas antes de escribir.            |
 | `MuroMiedos.vue`           | Vue   | Auto-refresh, paginación, "recargar", prepend sin refrescar.   |
 | `BotonSonido.vue`          | Vue   | Toggle con persistencia en `localStorage`.                    |
 
@@ -199,6 +201,11 @@ Detalles de robustez:
   "hace 5 min" de todas las tarjetas.
 - **Fechas sin desajustes de hidratación**: el servidor pinta la fecha corta y el
   cliente la sustituye por la relativa al montar.
+- **Aceptación de reglas persistida**: el diálogo de términos guarda en
+  `localStorage` (`muro-halloween-terminos`) que ya se leyó. Mientras no se
+  acepte, la página queda inerte dentro del `<dialog>` modal y no se puede
+  escribir. **Si cambias el texto del diálogo, sube `VERSION_TERMINOS`** en
+  `TerminosMuro.vue`, o quien ya aceptó no lo volverá a ver.
 - **Sin JS**: el muro inicial sigue visible porque viene del SSR.
 
 ---

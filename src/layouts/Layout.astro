@@ -7,6 +7,7 @@ import "../styles/global.css";
 
 import BotonSonido from "../components/BotonSonido.vue";
 import FondoHalloween from "../components/FondoHalloween.astro";
+import TerminosMuro from "../components/TerminosMuro.vue";
 
 interface Props {
   titulo?: string;
@@ -46,5 +47,6 @@ const tituloCompleto = `${titulo} · Halloween UCLADCyT`;
     </div>
 
     <BotonSonido client:idle />
+    <TerminosMuro client:load />
   </body>
 </html>

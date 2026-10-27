@@ -345,6 +345,28 @@
       0 0 36px 10px rgba(255, 107, 26, 0.35);
   }
 
+  /* --- Diálogo de términos ----------------------------------------------------
+   Un <dialog> nativo: mientras está en modo modal, el resto de la página queda
+   inerte (no se puede escribir hasta aceptar). */
+
+  dialog.dialogo-muro {
+    position: fixed;
+    inset: 0;
+    width: min(92vw, 40rem);
+    height: fit-content;
+    max-height: 88dvh;
+    margin: auto; /* centrado horizontal y vertical */
+    padding: 0;
+    border: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  dialog.dialogo-muro::backdrop {
+    background: rgba(10, 10, 10, 0.88);
+    backdrop-filter: blur(3px);
+  }
+
   /* --- Enlace de salto (accesibilidad) --------------------------------------- */
   .salto-contenido {
     position: fixed;
